@@ -3,12 +3,12 @@
 // 11/12/2014 
 #include "definecalc.h"
 /**********************
-	L --> E
-	E --> F G
-	F --> H I
-	G --> + F G
-	G --> - F G
-	G -->
+	L --> E *
+	E --> L R*
+	L --> H I*
+	R --> + L R*
+	R --> - L R*
+	R -->*
 	H --> integer
 	H --> ( E )
 	I --> * H I
@@ -29,14 +29,56 @@ namespace TermCalc
 	public:
 		Parser(){}
 
-		void getsym()
-		{
-			sp++;
+		void getsym() { sp++; }
+
+		void harg() {
+			if( accept( val ) )
+			{
+				getsym();
+			}
+			else if( accept( lparen ) )
+			{
+				getsym();
+				expression();
+				expect( rparen );
+			}
+		};
+		void iarg() {
+			
+		};
+		bool accept( Symbol s ) {
+			return sp->type == s;
+		};
+		bool expect( Symbol s ) {
+			if( sp->type == s ) return true;
+			cout << "missing" << code_to_type(s) << endl;
+			return false;
+		}
+		void terminate(){};
+		void larg() {
+			harg();
+			iarg();
+		}
+		void rarg() {
+			if( accept( plus ) )
+			{
+				getsym();
+				larg();
+				rarg();
+			}
+			else if( accept( sub ) )
+			{
+				getsym();
+				larg();
+				rarg();
+			}	
+			else terminate();
 		}
 
 		void expression()
 		{
-
+			larg();
+			rarg();
 		}
 
 		void lang() {

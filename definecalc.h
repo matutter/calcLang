@@ -12,7 +12,7 @@ namespace TermCalc
 	} Symbol;
 
 
-	inline uint8_t TYPECODE(char x)
+	inline Symbol TYPECODE(char x)
 	{
 		switch(x) 				
 		{	case '(': return lparen; 
@@ -26,7 +26,7 @@ namespace TermCalc
 		}
 	}
 
-	string code_to_type( uint8_t x )
+	string code_to_type( Symbol x )
 	{
 		switch(x) 				
 		{	case lparen : return "_lparen"; 
@@ -51,7 +51,7 @@ namespace TermCalc
 	}
 
 	struct lambda {
-		uint8_t type;
+		Symbol type;
 		_LVAL val;
 		_LVAL (*func)(lambda*, lambda*);
 	};
