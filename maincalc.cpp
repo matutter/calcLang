@@ -13,7 +13,7 @@ using namespace std;
 int main(int argc, char const *argv[])
 {
 	
-	string s = "9 * 2 + 8 * 2";
+	string s = "1*2+1 + 2 * (3  + 2) * 2";
 	RETURN_TYPE ret;
 	TermCalc::Terminal 	term( &s );
 	TermCalc::Lexer 	lex( &s );
