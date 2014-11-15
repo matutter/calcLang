@@ -4,8 +4,6 @@
 #include "definecalc.h"
 #include <queue>
 /********************
-// after-thought... this is the same language as yours, just closer to BNF
-
 // the language below is like what I was trying to explain in class. 
 // we can remove the terms F and G by moving the grammar for value types farther away from the expression filter...
 // that allows us to evaluate lower order things as a product of lower order things as a product of values or other expressions...
