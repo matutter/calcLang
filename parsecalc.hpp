@@ -48,6 +48,9 @@ namespace TermCalc
 				case TermCalc::val:
 					val = ts->front().val;
 					ts->pop();
+				break;
+				default:
+					throw VAL_ERR;
 			}
 			return val; 
 		}

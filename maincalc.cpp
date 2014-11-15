@@ -19,16 +19,15 @@ int main(int argc, char const *argv[])
 	Parser      parser;
 
 	while( term.capture() ) {
-		queue<lambda> * sym = new queue<lambda>;
+		queue<lambda> sym;
 		try {
-			if( lex.analyze( sym ) ) {
-				parser.parse(sym).eval(&ret).dispose();
+			if( lex.analyze( &sym ) ) {
+				parser.parse(&sym).eval(&ret).dispose();
 				cout << " = " << ret << endl;
 			}
 		} catch( ErrorCodes e ) {
 			cout << endl << "Error: expected " << error_from_code( e ) << endl;
 		}
-		delete( sym );
 		s.clear();
 	}
 	s.clear();

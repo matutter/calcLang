@@ -47,7 +47,7 @@ namespace TermCalc
 	}
 
 	typedef enum {
-		H_ERR, I_ERR, TERM_ERR, F_ERR, G_ERR, EXPR_ERR, L_ERR, LPAR_ERR
+		H_ERR, I_ERR, TERM_ERR, VAL_ERR, G_ERR, EXPR_ERR, L_ERR, LPAR_ERR
 	} ErrorCodes;
 
 
@@ -57,7 +57,7 @@ namespace TermCalc
 		{	case H_ERR : return "h argument"; 
 			case I_ERR : return "i argument"; 
 			case TERM_ERR 	: return "termination argument"; 
-			case F_ERR 	: return "left argument"; 
+			case VAL_ERR 	: return "value"; 
 			case G_ERR 	: return "right argument"; 
 			case EXPR_ERR 	: return "expression"; 
 			case L_ERR 	: return "language"; 
