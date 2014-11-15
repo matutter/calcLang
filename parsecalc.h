@@ -46,7 +46,7 @@ namespace TermCalc
 		}
 		_LVAL factor(queue<lambda> *ts)
 		{
-			_LVAL val;
+			_LVAL val = -1;
 			switch( ts->front().type )
 			{
 				case lparen:
@@ -66,7 +66,7 @@ namespace TermCalc
 			while( high_order_op( ts->front().type ) ){
 				lambda s = ts->front();
 				ts->pop();		
-				val = s.func(val,term(ts));
+				val = s.func(val,factor(ts));
 			}
 			return val;
 		}
