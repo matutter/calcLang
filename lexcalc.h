@@ -1,7 +1,7 @@
 #include "definecalc.h"
 
 #include <iostream>
-
+#include <queue>
 using namespace std;
 
 namespace TermCalc
@@ -15,53 +15,52 @@ namespace TermCalc
 		{
 			this->buffer = buf;
 		}
-		int analyze(lambda ** symbols, size_t * l)
+		int analyze(queue<lambda> *symbols)
 		{
-			//symbols = new lambda*[ this->buffer->size() ];
 			string::iterator it = this->buffer->begin();
 			while( it != this->buffer->end() )
 			switch( *it )
 			{
 				case '(':
-					symbols[(*l)++] = &TermCalc::_lparen;
+					symbols->push( _lparen );
 					it++;
 				break;
 				case ')':
-					symbols[(*l)++] = &TermCalc::_rparen;
+					symbols->push( _rparen );
 					it++;
 				break;
 				case '+':
-					symbols[(*l)++] = &TermCalc::_plus;
+					symbols->push( _plus );
 					it++;
 				break;
 				case '-':
-					symbols[(*l)++] = &TermCalc::_sub;
+					symbols->push( _sub );
 					it++;
 				break;
 				case '*':
-					symbols[(*l)++] = &TermCalc::_mult;
+					symbols->push( _mult );
 					it++;
 				break;				
 				case '%':
-					symbols[(*l)++] = &TermCalc::_mod;
+					symbols->push( _mod );
 					it++;
 				break;
 				case '/':
-					symbols[(*l)++] = &TermCalc::_div;
+					symbols->push( _div );
 					it++;
 				break;
 				default:
 					if( isdigit( *it ) ) {
-						symbols[*l] = new TermCalc::lambda;
-						symbols[*l]->type = TYPECODE(0x0);
-						symbols[*l]->val = TermCalc::atoi(&it);
-						(*l)++;
+						lambda l;
+						l.type = TYPECODE(0x0);
+						l.val = atoi(&it);
+						symbols->push(l);
 					}
 					else if( isspace(*it) )
 						it++;
 					else return ERR( it - this->buffer->begin() );
 			}
-			return 1;
+			return symbols->size();
 		}
 	private:
 		int ERR(int pos) {

@@ -2,9 +2,9 @@
 #define _definecalc_h
 
 #include <stdint.h>
-#define _LVAL uint32_t
+#define _LVAL int32_t
 #define RETURN_TYPE _LVAL
-#define PARSEDEBUG
+//#define PARSEDEBUG
 namespace TermCalc
 {
 	typedef enum {

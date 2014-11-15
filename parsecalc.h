@@ -2,23 +2,22 @@
 // mathew utter 
 // 11/12/2014 
 #include "definecalc.h"
-#include <vector>
+#include <queue>
 /********************
-	L --> E
-	E --> F G
-	F --> H I
-	G --> + F G
-	G --> - F G
-	G -->
-	H --> integer
-	H --> ( E )
-	I --> * H I
-	I --> / H I
-	I --> % H I
-	I --> 
+// the language below is like what I was trying to explain in class. 
+// we can remove the terms F and G by moving the grammar for value types farther away from the expression filter...
+// that allows us to evaluate lower order things as a product of lower order things as a product of values or other expressions...
+// language from http://web.cse.ohio-state.edu/software/2231/web-sw2/extras/slides/27.Recursive-Descent-Parsing.pdf
+	lang --> expr
+	expr --> term {add-op term}        // {left associative}
+	term --> factor {mult-op factor}   // {commutative} repeat and reduce call stack
+	factor --> ( expr ) | number
+	add-op --> + | -
+	mult-op --> * | / | %
+	number --> [0-9]
 *********************/
 
-#define PARSEDEBUG
+//#define PARSEDEBUG
 
 #include <iostream>
 using namespace std;
@@ -28,127 +27,77 @@ namespace TermCalc
 	{	
 	private:
 		_LVAL *ret_val;
-		lambda * syml;
-		lambda ** symbols;
-		vector<lambda> op;
-		size_t sp;
-		size_t limit;
-		size_t CYCLE;
+		//size_t sp;
+		//size_t limit;
+		//size_t CYCLE;
 	public:
 		Parser() {
-			this->CYCLE = 0;
+			//this->CYCLE = 0;
 		}
-		
-		_LVAL epsilon()
+		bool low_order_op(Symbol s)
 		{
-			//cout << "*";
+			return s == plus || s == sub;
 		}
-
-		void consume( Symbol s, int frame )
+		bool high_order_op(Symbol s)
 		{
-			if( syml->type == s )
+			return s == div || s == mult || s == mod;
+		}
+		_LVAL factor(queue<lambda> *ts)
+		{
+			_LVAL val;
+			switch( ts->front().type )
 			{
-				cout << frame;
-				while( frame-- ) cout << " ";
-				cout << "consume " << code_to_type(s) << endl;
-				op.push_back( *syml );
-				if( --limit )
-					syml = symbols[++sp];
-			}
-		}
-
-		void H(int frame)
-		{
-			switch( syml->type )
-			{
-				case val:
-					consume( val, frame );
-				break;
 				case lparen:
-					consume( lparen, frame );
-					E(frame+1);
-					consume( rparen, frame );
+					ts->pop();
+					val = expr(ts);
+					ts->pop();
+				break;
+				case TermCalc::val:
+					val = ts->front().val;
+					ts->pop();
 			}
+			return val; 
 		}
-		void I(int frame)
+		_LVAL term(queue<lambda> *ts)
 		{
-			switch( syml->type )
-			{
-				case mult:
-				case div:
-				case mod:
-					consume( syml->type, frame );
-					H(frame);
-					I(frame+1);
-					break;
-				default:
-					epsilon();
+			_LVAL val = factor(ts);
+			while( high_order_op( ts->front().type ) ){
+				lambda s = ts->front();
+				ts->pop();		
+				val = s.func(val,term(ts));
 			}
+			return val;
 		}
-		void G(int frame)
+		_LVAL expr(queue<lambda> *ts)
 		{
-			switch( syml->type )
-			{
-				case plus:
-				case sub:
-					consume( syml->type, frame );
-					F(frame+1);
-					G(frame+1);
-					break;
-				default:
-					epsilon();
+			_LVAL val = term(ts);
+			while(  low_order_op( ts->front().type ) ) {
+				lambda s = ts->front();
+				ts->pop();
+				val = s.func(val,term(ts));
 			}
+			return val;
 		}
-		void F(int frame)
+		_LVAL lang(queue<lambda> *ts)
 		{
-			H(frame+1);
-			I(frame+1);
+			return expr(ts);
 		}
-		void E(int frame)
+		Parser& parse(queue<lambda> *syml)
 		{
-			F(frame+1);
-			G(frame+1);
-		}
-		void L(int frame)
-		{
-			E(frame+1);
-		}
-
-
-		Parser& parse(lambda ** syml, size_t size)
-		{
-			#ifdef PARSEDEBUG
-				cout << "\nparsing" << endl;
-				for (int i = 0; i < size; ++i)
-					cout << *syml[i] << endl;
-				cout << "__________________" << endl;
-			#endif
 			this->ret_val = new RETURN_TYPE;
-			this->syml = syml[0];
-			this->symbols = syml;
-			this->sp = 0;
-			this->limit = size;
-			int frame = 0;
-			L( frame );
-			#ifdef PARSEDEBUG
-				cout <<  sp+1 << '/' << size << " steps" << endl;
-			#endif
+			*ret_val = lang( syml );
+			if( !syml->empty() )
+			{
+				throw EXPR_ERR;
+			}
 			return *this;
 		}
-
-		void dispose()
-		{
-			delete( ret_val );
-			//delete( syml );
-			sp = 0;
-		}
-
+		/* clean up */
+		void dispose() {}
 		Parser& eval(RETURN_TYPE * ret)
 		{
 			*ret = *ret_val;
 			return *this;
 		}
-
 	};
-
 }
