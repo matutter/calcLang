@@ -1,23 +1,19 @@
-#include "definecalc.h"
-
-#include <iostream>
-#include <queue>
-using namespace std;
-
+#ifndef _lexcalc_hpp
+#define _lexcalc_hpp
+#include "definecalc.hpp"
 namespace TermCalc
 {
-
 	class Lexer
 	{
 	public:
-		string * buffer;
-		Lexer(string * buf)
+		std::string * buffer;
+		Lexer(std::string * buf)
 		{
 			this->buffer = buf;
 		}
-		int analyze(queue<lambda> *symbols)
+		int analyze(std::queue<lambda> *symbols)
 		{
-			string::iterator it = this->buffer->begin();
+			std::string::iterator it = this->buffer->begin();
 			while( it != this->buffer->end() )
 			switch( *it )
 			{
@@ -64,14 +60,13 @@ namespace TermCalc
 		}
 	private:
 		int ERR(int pos) {
-			cout << endl;
+			std::cout << std::endl;
 			for (int i = 0; i < pos; ++i)
-				cout << " ";
-			cout << "^" << endl;
-			cout << "ERROR col " << pos << endl;
+				std::cout << " ";
+			std::cout << "^" << std::endl;
+			std::cout << "ERROR col " << pos << std::endl;
 			return 0;
 		}
 	};
-
-
 }
+#endif

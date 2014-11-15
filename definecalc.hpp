@@ -1,7 +1,14 @@
-#ifndef _definecalc_h
-#define _definecalc_h
+#ifndef _definecalc_hpp
+#define _definecalc_hpp
 
+#include <queue>
+#include <cstdio>
+#include <string>
+#include <iostream>
+#include <unistd.h>
+#include <termios.h>
 #include <stdint.h>
+
 #define _LVAL int32_t
 #define RETURN_TYPE _LVAL
 //#define PARSEDEBUG
@@ -25,7 +32,7 @@ namespace TermCalc
 		}
 	}
 
-	string code_to_type( Symbol x )
+	std::string code_to_type( Symbol x )
 	{
 		switch(x) 				
 		{	case lparen : return "_lparen"; 
@@ -44,7 +51,7 @@ namespace TermCalc
 	} ErrorCodes;
 
 
-	string error_from_code( int x )
+	std::string error_from_code( int x )
 	{
 		switch(x) 				
 		{	case H_ERR : return "h argument"; 
@@ -57,7 +64,7 @@ namespace TermCalc
 			case LPAR_ERR 	: return "unmet parenthesis"; 
 		}		
 	}
-	_LVAL atoi( string::iterator * c ) {
+	_LVAL atoi( std::string::iterator * c ) {
 		_LVAL val = 0;
 		while( **c != 0x0 && isdigit(**c) ) {
 			val *= 10;
@@ -73,7 +80,7 @@ namespace TermCalc
 		_LVAL (*func)(_LVAL, _LVAL);
 	};
 
-	inline ostream &operator<<(std::ostream &out, const lambda &l) {
+	inline std::ostream &operator<<(std::ostream &out, const lambda &l) {
 		if( l.type==val )
 			out << code_to_type(l.type) << "\t" << l.val;
 		else

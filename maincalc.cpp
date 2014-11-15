@@ -1,10 +1,7 @@
-#include "terminalcalc.h"
-#include "parsecalc.h"
-#include "lexcalc.h"
-#include "definecalc.h"
-
-#include <queue>
-#include <iostream>
+#include "definecalc.hpp"
+#include "terminalcalc.hpp"
+#include "parsecalc.hpp"
+#include "lexcalc.hpp"
 
 using namespace std;
 
