@@ -4,6 +4,7 @@
 #include "lexcalc.hpp"
 
 using namespace std;
+using namespace TermCalc;
 
 int main(int argc, char const *argv[])
 {
@@ -13,19 +14,19 @@ int main(int argc, char const *argv[])
 	//string s = "1*2+1 * (9 + ((8+1) * 7)) + 2 * (3  + 2) * 2"; // 94
 	string s = "";
 	RETURN_TYPE ret;
-	TermCalc::Terminal 	term( &s );
-	TermCalc::Lexer 	lex( &s );
-	TermCalc::Parser 	parser;
+	Terminal    term( &s );
+	Lexer       lex( &s );
+	Parser      parser;
 
 	while( term.capture() ) {
-		queue<TermCalc::lambda> * sym = new queue<TermCalc::lambda>;
+		queue<lambda> * sym = new queue<lambda>;
 		try {
 			if( lex.analyze( sym ) ) {
 				parser.parse(sym).eval(&ret).dispose();
 				cout << " = " << ret << endl;
 			}
-		} catch( TermCalc::ErrorCodes e ) {
-			cout << endl << "Error: expected " << TermCalc::error_from_code( e ) << endl;
+		} catch( ErrorCodes e ) {
+			cout << endl << "Error: expected " << error_from_code( e ) << endl;
 		}
 		delete( sym );
 		s.clear();
