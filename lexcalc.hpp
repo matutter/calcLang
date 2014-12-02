@@ -1,6 +1,7 @@
 #ifndef _lexcalc_hpp
 #define _lexcalc_hpp
 #include "definecalc.hpp"
+#include <vector>
 namespace TermCalc
 {
 	class Lexer
@@ -11,38 +12,38 @@ namespace TermCalc
 		{
 			this->buffer = buf;
 		}
-		int analyze(std::queue<lambda> *symbols)
+		int analyze(std::/*queue*/vector<lambda>& symbols)
 		{
 			std::string::iterator it = this->buffer->begin();
 			while( it != this->buffer->end() )
 			switch( *it )
 			{
 				case '(':
-					symbols->push( _lparen );
+					symbols.push_back( _lparen );
 					it++;
 				break;
 				case ')':
-					symbols->push( _rparen );
+					symbols.push_back( _rparen );
 					it++;
 				break;
 				case '+':
-					symbols->push( _plus );
+					symbols.push_back( _plus );
 					it++;
 				break;
 				case '-':
-					symbols->push( _sub );
+					symbols.push_back( _sub );
 					it++;
 				break;
 				case '*':
-					symbols->push( _mult );
+					symbols.push_back( _mult );
 					it++;
 				break;				
 				case '%':
-					symbols->push( _mod );
+					symbols.push_back( _mod );
 					it++;
 				break;
 				case '/':
-					symbols->push( _div );
+					symbols.push_back( _div );
 					it++;
 				break;
 				default:
@@ -50,13 +51,14 @@ namespace TermCalc
 						lambda l;
 						l.type = TYPECODE(0x0);
 						l.val = atoi(&it);
-						symbols->push(l);
+						l.func = _UNREACHABLE_func;
+						symbols.push_back(l);
 					}
 					else if( isspace(*it) )
 						it++;
 					else return ERR( it - this->buffer->begin() );
 			}
-			return symbols->size();
+			return symbols.size();
 		}
 	private:
 		int ERR(int pos) {

@@ -8,41 +8,49 @@
 #include <unistd.h>
 #include <termios.h>
 #include <stdint.h>
+#include "parser.h"
 
-#define _LVAL int32_t
+#ifndef END 
+#define END 98
+#endif
+
+#define _LVAL int
 #define RETURN_TYPE _LVAL
 //#define PARSEDEBUG
 namespace TermCalc
 {
+	/* these used to be lower case */
 	typedef enum {
-		lparen, rparen, plus, sub, mult, mod, div, val
+		//LPAREN, RPAREN, PLUS, SUB, MULT, MOD, DIV, VAL
 	} Symbol;
 
-	inline Symbol TYPECODE(char x)
+	inline int/*Symbol*/ TYPECODE(char x)
 	{
 		switch(x) 				
-		{	case '(': return lparen; 
-			case ')': return rparen; 
-			case '+': return plus; 
-			case '-': return sub; 
-			case '*': return mult; 
-			case '%': return mod; 
-			case '/': return div; 
-			default : return val; 
+		{	case '(': return LPAREN; 
+			case ')': return RPAREN; 
+			case '+': return PLUS; 
+			case '-': return SUB; 
+			case '*': return MULT; 
+			case '%': return MOD; 
+			case '/': return DIV;
+			case END: return END;
+			default : return VAL; 
 		}
 	}
 
-	std::string code_to_type( Symbol x )
+	std::string code_to_type( /*Symbol*/int x )
 	{
 		switch(x) 				
-		{	case lparen : return "_lparen"; 
-			case rparen : return "_rparen"; 
-			case plus 	: return "_plus"; 
-			case sub 	: return "_sub"; 
-			case mult 	: return "_mult"; 
-			case mod 	: return "_mod"; 
-			case div 	: return "_div"; 
-			case val 	: return "_val_t"; 
+		{	case LPAREN : return "_LPAREN"; 
+			case RPAREN : return "_RPAREN"; 
+			case PLUS 	: return "_PLUS"; 
+			case SUB 	: return "_SUB"; 
+			case MULT 	: return "_MULT"; 
+			case MOD 	: return "_MOD"; 
+			case DIV 	: return "_DIV"; 
+			case VAL 	: return "_VAL_t";
+			case END    : return "_END_t";
 		}		
 	}
 
@@ -57,7 +65,7 @@ namespace TermCalc
 		{	case H_ERR : return "h argument"; 
 			case I_ERR : return "i argument"; 
 			case TERM_ERR 	: return "termination argument"; 
-			case VAL_ERR 	: return "value"; 
+			case VAL_ERR 	: return "VALue"; 
 			case G_ERR 	: return "right argument"; 
 			case EXPR_ERR 	: return "expression"; 
 			case L_ERR 	: return "language"; 
@@ -74,66 +82,77 @@ namespace TermCalc
 		return val;
 	}
 
-	struct lambda {
-		Symbol type;
+	typedef struct {
+		/*Symbol*/int type;
 		_LVAL val;
 		_LVAL (*func)(_LVAL, _LVAL);
-	};
+	} lambda;
 
 	inline std::ostream &operator<<(std::ostream &out, const lambda &l) {
-		if( l.type==val )
+		if( l.type==VAL )
 			out << code_to_type(l.type) << "\t" << l.val;
 		else
 			out << code_to_type(l.type) << "\t" << code_to_type(l.type);
 		return out;
 	}
 
+	inline _LVAL _UNREACHABLE_func(_LVAL a, _LVAL b) {
+		#ifdef PARSEDEBUG
+			std::cout << "_UNREACHABLE_func" << std::endl;
+		#endif
+		return 0;
+	}
 	TermCalc::lambda _rparen = {
 		TYPECODE( ')' ),
+		0,
+		_UNREACHABLE_func,
 	};
 	TermCalc::lambda _lparen = {
 		TYPECODE( '(' ),
+		0,
+		_UNREACHABLE_func,
 	};
 
-	inline _LVAL _plus_func(_LVAL a, _LVAL b) {
-		#ifdef PARSEDEBUG
-			cout << "\t_plus_func " << a << '+' << b << endl;
-		#endif
+
+	inline _LVAL _PLUS_func(_LVAL a, _LVAL b) {
 		return a + b;
 	}
 	TermCalc::lambda _plus = {
 		TYPECODE( '+' ),
 		0,
-		_plus_func,
+		_PLUS_func,
 	};
-	inline _LVAL _mult_func(_LVAL a, _LVAL b) {
-		#ifdef PARSEDEBUG
-			cout << "\t_mult_func " << a << '*' << b << endl;
-		#endif
+	inline _LVAL _MULT_func(_LVAL a, _LVAL b) {
 		return a * b;
 	}
 	TermCalc::lambda _mult = {
 		TYPECODE( '*' ),
 		0,
-		_mult_func,
+		_MULT_func,
 	};
-	inline _LVAL _div_func(_LVAL a, _LVAL b) { return a / b; }
+	inline _LVAL _DIV_func(_LVAL a, _LVAL b) { 
+			return a / b;
+		}
 	TermCalc::lambda _div = {
 		TYPECODE( '/' ),
 		0,
-		_div_func,
+		_DIV_func,
 	};
-	inline _LVAL _sub_func(_LVAL  a, _LVAL  b) { return a - b; }
+	inline _LVAL _SUB_func(_LVAL  a, _LVAL  b) {
+		return a - b;
+	}
 	TermCalc::lambda _sub = {
 		TYPECODE( '-' ),
 		0,
-		_sub_func,
+		_SUB_func,
 	};
-	inline _LVAL _mod_func(_LVAL  a, _LVAL  b) { return a % b; }
+	inline _LVAL _MOD_func(_LVAL  a, _LVAL  b) {
+		return a % b;
+	}
 	TermCalc::lambda _mod = {
 		TYPECODE( '%' ),
 		0,
-		_mod_func,
+		_MOD_func,
 	};	
 
 

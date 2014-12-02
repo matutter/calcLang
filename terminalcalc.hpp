@@ -46,7 +46,6 @@ public:
 	{
 		char  c = 0
 			, l;
-		//vector<string> history;
 		do
 		{
 			l = c;
@@ -65,23 +64,21 @@ public:
 					clear();
 					backspace();
 				break;
+				case 'A':
+				case 'B':
+				case 'C':
+				case 'D':
+					if( l == '[' ) {
+						clear();
+						backspace();
+						break;
+					}
 				default:
-					if( l == '[' && c == 'A' )
-					{
-						clear();
-						backspace();
-					}
-					else if( l == '[' && c == 'B' )
-					{
-						clear();
-						backspace();
-					}
-					else if( isprint(c) )
-					{
+					if( isprint(c) ) {
 						this->buffer->append<char>(1,c);
 					}
 			}
-			std::cout << "\r" << *this->buffer << std::flush;
+			std::cout << '\r' << *this->buffer << std::flush;
 		} while( c != 'q' || l != 'q' );
 		return 0;
 	}
