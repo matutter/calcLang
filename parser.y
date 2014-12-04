@@ -26,12 +26,12 @@ using namespace std;
 %syntax_error { throw EXPR_ERR; }
 
 
-lang ::= run END.               
+lang    ::= run END.               
 
-run ::= IDENT(A) EQ ex(B).        { cout << " = " << B << endl; TermCalc::IdentSet(A,B); }
-run ::= ex(A).                    { cout << " = " << A  << endl << flush;  }
+run     ::= IDENT(A) EQ ex(B).        { cout << " = " << B << endl; TermCalc::IdentSet(A,B); }
+run     ::= ex(A).                    { cout << " = " << A  << endl << flush;  }
 
-ex(L) ::= math(A).                { L = A; }
+ex(L)   ::= math(A).                { L = A; }
 
 math(L) ::= math(A) PLUS math(B). { L = A + B; }
 math(L) ::= math(A) SUB  math(B). { L = A - B; }
@@ -40,6 +40,10 @@ math(L) ::= math(A) MULT math(B). { L = A * B; }
 math(L) ::= math(A) MOD  math(B). { L = A % B; }
 
 math(L) ::= num(A).               { L = A; }
+/* value_types and IDs */
 num(L)  ::= VAL(A).               { L = A.val; }
-num(L)  ::= IDENT(A).			  { L = TermCalc::ValFromID(A); }
+num(L)  ::= IDENT(A).             { L = TermCalc::ValFromID(A); }
 num(L)  ::= LPAREN ex(A) RPAREN.  { L = A; }
+/* explicit magnitude */
+num(L)  ::= SUB num(A).           { L = -A; }
+num(L)  ::= PLUS num(A).          { L = abs(A); }

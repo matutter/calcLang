@@ -81,8 +81,8 @@ typedef union {
 #define ParseARG_PDECL
 #define ParseARG_FETCH
 #define ParseARG_STORE
-#define YYNSTATE 24
-#define YYNRULE 13
+#define YYNSTATE 28
+#define YYNRULE 15
 #define YY_NO_ACTION      (YYNSTATE+YYNRULE+2)
 #define YY_ACCEPT_ACTION  (YYNSTATE+YYNRULE+1)
 #define YY_ERROR_ACTION   (YYNSTATE+YYNRULE)
@@ -151,38 +151,40 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **                     shifting non-terminals after a reduce.
 **  yy_default[]       Default action for each state.
 */
-#define YY_ACTTAB_COUNT (40)
+#define YY_ACTTAB_COUNT (45)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */     7,    6,    4,    5,    3,    8,   19,   15,   14,   38,
- /*    10 */     4,    5,    3,   17,   16,   18,    1,    8,   19,   23,
- /*    20 */    13,    8,   19,   11,   12,   24,   18,    1,   39,   10,
- /*    30 */    19,    9,   19,   22,   19,   21,   19,   20,   19,    2,
+ /*     0 */     7,    6,    4,    5,    3,    8,    9,   15,    4,    5,
+ /*    10 */     3,   19,   28,   22,    1,   10,   23,   17,   16,   44,
+ /*    20 */     8,    9,   10,   23,   27,   18,   14,   21,   22,    1,
+ /*    30 */    10,   23,   13,   12,   23,   11,   23,   26,   23,    2,
+ /*    40 */    25,   23,   24,   23,   20,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */     1,    2,    3,    4,    5,   13,   14,   15,   16,   17,
- /*    10 */     3,    4,    5,    7,   11,    9,   10,   13,   14,   15,
- /*    20 */     6,   13,   14,   15,    7,    0,    9,   10,   18,   13,
- /*    30 */    14,   13,   14,   13,   14,   13,   14,   13,   14,    8,
+ /*     0 */     1,    2,    3,    4,    5,    1,    2,    6,    3,    4,
+ /*    10 */     5,    7,    0,    9,   10,   13,   14,   15,   16,   17,
+ /*    20 */     1,    2,   13,   14,   15,   11,    7,   14,    9,   10,
+ /*    30 */    13,   14,   15,   13,   14,   13,   14,   13,   14,    8,
+ /*    40 */    13,   14,   13,   14,   14,
 };
 #define YY_SHIFT_USE_DFLT (-2)
-#define YY_SHIFT_COUNT (14)
+#define YY_SHIFT_COUNT (16)
 #define YY_SHIFT_MIN   (-1)
 #define YY_SHIFT_MAX   (31)
 static const signed char yy_shift_ofst[] = {
- /*     0 */    17,    6,    6,    6,    6,    6,    6,    6,   -1,    7,
- /*    10 */     7,    3,   31,   25,   14,
+ /*     0 */    19,    4,    4,    4,    4,    4,    4,    4,    4,    4,
+ /*    10 */    -1,    5,    5,   14,   31,   12,    1,
 };
-#define YY_REDUCE_USE_DFLT (-9)
-#define YY_REDUCE_COUNT (7)
-#define YY_REDUCE_MIN   (-8)
-#define YY_REDUCE_MAX   (24)
+#define YY_REDUCE_USE_DFLT (-1)
+#define YY_REDUCE_COUNT (9)
+#define YY_REDUCE_MIN   (0)
+#define YY_REDUCE_MAX   (30)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */    -8,    8,    4,   24,   22,   20,   18,   16,
+ /*     0 */     2,   17,    9,   29,   27,   24,   22,   20,   30,   13,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */    37,   37,   37,   37,   37,   37,   37,   37,   27,   29,
- /*    10 */    28,   37,   35,   37,   37,   26,   36,   35,   34,   33,
- /*    20 */    32,   31,   30,   25,
+ /*     0 */    43,   43,   43,   43,   43,   43,   43,   43,   43,   43,
+ /*    10 */    31,   33,   32,   43,   41,   43,   43,   30,   42,   41,
+ /*    20 */    40,   39,   38,   37,   36,   35,   34,   29,
 };
 
 /* The next table maps tokens into fallback tokens.  If a construct
@@ -298,8 +300,10 @@ static const char *const yyRuleName[] = {
  /*   8 */ "math ::= math MOD math",
  /*   9 */ "math ::= num",
  /*  10 */ "num ::= VAL",
- /*  11 */ "num ::= IDENT",
- /*  12 */ "num ::= LPAREN ex RPAREN",
+ /*  11 */ "num ::= SUB num",
+ /*  12 */ "num ::= PLUS num",
+ /*  13 */ "num ::= IDENT",
+ /*  14 */ "num ::= LPAREN ex RPAREN",
 };
 #endif /* NDEBUG */
 
@@ -624,6 +628,8 @@ static const struct {
   { 13, 3 },
   { 13, 1 },
   { 14, 1 },
+  { 14, 2 },
+  { 14, 2 },
   { 14, 1 },
   { 14, 3 },
 };
@@ -683,58 +689,68 @@ static void yy_reduce(
       case 1: /* run ::= IDENT EQ ex */
 #line 31 "parser.y"
 { cout << " = " << yymsp[0].minor.yy27 << endl; TermCalc::IdentSet(yymsp[-2].minor.yy0,yymsp[0].minor.yy27); }
-#line 687 "parser.c"
+#line 693 "parser.c"
         break;
       case 2: /* run ::= ex */
 #line 32 "parser.y"
 { cout << " = " << yymsp[0].minor.yy27  << endl << flush;  }
-#line 692 "parser.c"
+#line 698 "parser.c"
         break;
       case 3: /* ex ::= math */
       case 9: /* math ::= num */ yytestcase(yyruleno==9);
 #line 34 "parser.y"
 { yygotominor.yy27 = yymsp[0].minor.yy27; }
-#line 698 "parser.c"
+#line 704 "parser.c"
         break;
       case 4: /* math ::= math PLUS math */
 #line 36 "parser.y"
 { yygotominor.yy27 = yymsp[-2].minor.yy27 + yymsp[0].minor.yy27; }
-#line 703 "parser.c"
+#line 709 "parser.c"
         break;
       case 5: /* math ::= math SUB math */
 #line 37 "parser.y"
 { yygotominor.yy27 = yymsp[-2].minor.yy27 - yymsp[0].minor.yy27; }
-#line 708 "parser.c"
+#line 714 "parser.c"
         break;
       case 6: /* math ::= math DIV math */
 #line 38 "parser.y"
 { yygotominor.yy27 = yymsp[-2].minor.yy27 / yymsp[0].minor.yy27; }
-#line 713 "parser.c"
+#line 719 "parser.c"
         break;
       case 7: /* math ::= math MULT math */
 #line 39 "parser.y"
 { yygotominor.yy27 = yymsp[-2].minor.yy27 * yymsp[0].minor.yy27; }
-#line 718 "parser.c"
+#line 724 "parser.c"
         break;
       case 8: /* math ::= math MOD math */
 #line 40 "parser.y"
 { yygotominor.yy27 = yymsp[-2].minor.yy27 % yymsp[0].minor.yy27; }
-#line 723 "parser.c"
+#line 729 "parser.c"
         break;
       case 10: /* num ::= VAL */
 #line 43 "parser.y"
 { yygotominor.yy27 = yymsp[0].minor.yy0.val; }
-#line 728 "parser.c"
+#line 734 "parser.c"
         break;
-      case 11: /* num ::= IDENT */
+      case 11: /* num ::= SUB num */
 #line 44 "parser.y"
-{ yygotominor.yy27 = TermCalc::ValFromID(yymsp[0].minor.yy0); }
-#line 733 "parser.c"
+{ yygotominor.yy27 = -yymsp[0].minor.yy27; }
+#line 739 "parser.c"
         break;
-      case 12: /* num ::= LPAREN ex RPAREN */
+      case 12: /* num ::= PLUS num */
 #line 45 "parser.y"
+{ yygotominor.yy27 = abs(yymsp[0].minor.yy27); }
+#line 744 "parser.c"
+        break;
+      case 13: /* num ::= IDENT */
+#line 46 "parser.y"
+{ yygotominor.yy27 = TermCalc::ValFromID(yymsp[0].minor.yy0); }
+#line 749 "parser.c"
+        break;
+      case 14: /* num ::= LPAREN ex RPAREN */
+#line 49 "parser.y"
 { yygotominor.yy27 = yymsp[-1].minor.yy27; }
-#line 738 "parser.c"
+#line 754 "parser.c"
         break;
       default:
       /* (0) lang ::= run END */ yytestcase(yyruleno==0);
@@ -799,7 +815,7 @@ static void yy_syntax_error(
 #define TOKEN (yyminor.yy0)
 #line 26 "parser.y"
  throw EXPR_ERR; 
-#line 803 "parser.c"
+#line 819 "parser.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 

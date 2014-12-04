@@ -55,7 +55,6 @@ namespace TermCalc
 						lambda l;
 						l.type = TYPECODE(0x0);
 						l.val = atoi(&it);
-						l.func = _UNREACHABLE_func;
 						symbols.push_back(l);
 					}
 					else if( isspace(*it) )

@@ -1,40 +1,25 @@
 #ifndef _definecalc_hpp
 #define _definecalc_hpp
 
-#include <queue>
-#include <cstdio>
-#include <string>
 #include <iostream>
-#include <unistd.h>
-#include <termios.h>
 #include <stdint.h>
 #include "parser.h"
 #include <map>
 
-std::map<std::string, int> id_map;
-std::map<int, std::string> rev_id_map;
-std::map<int,int>    val_map;
+#define _LVAL       int64_t
+#define Symbol_tc   uint8_t
 
-#ifndef END 
-#define END 98
-#endif
-#ifndef IDENT
-#define IDENT 99
-#endif
-
-#define _LVAL int
-#define RETURN_TYPE _LVAL
-//#define PARSEDEBUG
 namespace TermCalc
 {
-
+	std::map<int,int>    val_map;
+	std::map<std::string, int> id_map;
+	std::map<int, std::string> rev_id_map;
 	typedef enum {
 		H_ERR, I_ERR, TERM_ERR, VAL_ERR, G_ERR, EXPR_ERR, L_ERR, LPAR_ERR, NOIDENT
 	} ErrorCodes;
 	typedef struct {
-		/*Symbol*/int type;
+		int type;
 		_LVAL val;
-		_LVAL (*func)(_LVAL, _LVAL);
 	} lambda;
 	int id = 0;
 	int GetCreateIdent(std::string s) {
@@ -63,12 +48,16 @@ namespace TermCalc
 		val_map[l.val] = b;
 	}
 
-	/* these used to be lower case */
-	typedef enum {
-		//LPAREN, RPAREN, PLUS, SUB, MULT, MOD, DIV, VAL
-	} Symbol;
+	std::string findIdent( std::string::iterator *c ) {
+		std::string s = "";
+		while( **c != 0x0 && (isdigit(**c) || isalpha(**c)) ) {
+			s+= **c;
+			(*c)++;
+		}
+		return s;
+	}
 
-	inline int/*Symbol*/ TYPECODE(char x)
+	inline int TYPECODE(char x)
 	{
 		switch(x) 				
 		{	case '(': return LPAREN; 
@@ -85,10 +74,10 @@ namespace TermCalc
 		}
 	}
 
-	std::string code_to_type( /*Symbol*/int x )
+	std::string code_to_type( int x )
 	{
-		switch(x) 				
-		{	case LPAREN : return "_LPAREN"; 
+		switch(x) {
+			case LPAREN : return "_LPAREN"; 
 			case RPAREN : return "_RPAREN"; 
 			case PLUS 	: return "_PLUS"; 
 			case SUB 	: return "_SUB"; 
@@ -102,19 +91,18 @@ namespace TermCalc
 		}		
 	}
 
-
 	std::string error_from_code( int x )
 	{
-		switch(x) 				
-		{	case H_ERR : return "h argument"; 
-			case I_ERR : return "i argument"; 
-			case TERM_ERR 	: return "termination argument"; 
-			case VAL_ERR 	: return "VALue"; 
-			case G_ERR 	: return "right argument"; 
-			case EXPR_ERR 	: return "expression"; 
-			case L_ERR 	: return "language"; 
-			case LPAR_ERR 	: return "unmet parenthesis"; 
-			case NOIDENT  : return "Unknown identifier";
+		switch(x) {
+			case H_ERR     : return "h argument"; 
+			case I_ERR     : return "i argument"; 
+			case TERM_ERR  : return "termination argument"; 
+			case VAL_ERR   : return "VALue"; 
+			case G_ERR 	   : return "right argument"; 
+			case EXPR_ERR  : return "expression"; 
+			case L_ERR 	   : return "language"; 
+			case LPAR_ERR  : return "unmet parenthesis"; 
+			case NOIDENT   : return "Unknown identifier";
 		}		
 	}
 	_LVAL atoi( std::string::iterator * c ) {
@@ -127,16 +115,14 @@ namespace TermCalc
 		return val;
 	}
 
-	std::string findIdent( std::string::iterator *c ) {
-		std::string s = "";
-		while( **c != 0x0 && (isdigit(**c) || isalpha(**c)) ) {
-			s+= **c;
-			(*c)++;
-		}
-		return s;
-	}
-
-
+	lambda _rparen = { TYPECODE( ')' ), 0, };
+	lambda _lparen = { TYPECODE( '(' ), 0, };
+	lambda _plus   = { TYPECODE( '+' ), 0, };
+	lambda _mult   = { TYPECODE( '*' ), 0, };
+	lambda _div    = { TYPECODE( '/' ), 0, };
+	lambda _sub    = { TYPECODE( '-' ), 0, };
+	lambda _mod    = { TYPECODE( '%' ), 0, };	
+	lambda _eq     = { TYPECODE( '=' ), 0, };
 
 	inline std::ostream &operator<<(std::ostream &out, const lambda &l) {
 		if( l.type==VAL )
@@ -145,70 +131,5 @@ namespace TermCalc
 			out << code_to_type(l.type) << "\t" << code_to_type(l.type);
 		return out;
 	}
-
-	inline _LVAL _UNREACHABLE_func(_LVAL a, _LVAL b) {
-		#ifdef PARSEDEBUG
-			std::cout << "_UNREACHABLE_func" << std::endl;
-		#endif
-		return 0;
-	}
-	TermCalc::lambda _rparen = {
-		TYPECODE( ')' ),
-		0,
-		_UNREACHABLE_func,
-	};
-	TermCalc::lambda _lparen = {
-		TYPECODE( '(' ),
-		0,
-		_UNREACHABLE_func,
-	};
-
-
-	inline _LVAL _PLUS_func(_LVAL a, _LVAL b) {
-		return a + b;
-	}
-	TermCalc::lambda _plus = {
-		TYPECODE( '+' ),
-		0,
-		_PLUS_func,
-	};
-	inline _LVAL _MULT_func(_LVAL a, _LVAL b) {
-		return a * b;
-	}
-	TermCalc::lambda _mult = {
-		TYPECODE( '*' ),
-		0,
-		_MULT_func,
-	};
-	inline _LVAL _DIV_func(_LVAL a, _LVAL b) { 
-			return a / b;
-		}
-	TermCalc::lambda _div = {
-		TYPECODE( '/' ),
-		0,
-		_DIV_func,
-	};
-	inline _LVAL _SUB_func(_LVAL  a, _LVAL  b) {
-		return a - b;
-	}
-	TermCalc::lambda _sub = {
-		TYPECODE( '-' ),
-		0,
-		_SUB_func,
-	};
-	inline _LVAL _MOD_func(_LVAL  a, _LVAL  b) {
-		return a % b;
-	}
-	TermCalc::lambda _mod = {
-		TYPECODE( '%' ),
-		0,
-		_MOD_func,
-	};	
-	TermCalc::lambda _eq = {
-		TYPECODE( '=' ),
-		0,
-		_MOD_func,
-	};
-
 }
 #endif

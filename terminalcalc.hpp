@@ -1,6 +1,10 @@
 #ifndef _terminalcalc_hpp
 #define _terminalcalc_hpp
 #include "definecalc.hpp"
+#include <termios.h>        // TCSANOW, ICONAN, ECHO, VTIME, VMIN, TCSADRIAN, ..getattr/setattr
+#include <cstdio>			// p error
+#include <unistd.h>			// read
+
 namespace TermCalc
 {
 class Terminal {

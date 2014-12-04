@@ -1,6 +1,5 @@
 #include "definecalc.hpp"
 #include "terminalcalc.hpp"
-//#include "parsecalc.hpp"
 #include "lexcalc.hpp"
 
 /* lemon files */
@@ -11,31 +10,27 @@ using namespace TermCalc;
 
 int main(int argc, char const *argv[])
 {
-	for (int i = 0; i < 36; ++i) cout << '#';
-	cout << endl << "| Spaces are allowed in expressions.\n| Press 'Enter' to calculate.\n| Press 'q' twice to quit.\n" << endl;
+	for (int i = 0; i < 12; ++i) cout << "#*#";
+	cout << endl << "| Spaces are allowed in expressions.\n"
+					"| Press 'Enter' to calculate.\n"
+					"| Press 'q' twice to quit.\n" << endl;
 
 	//string s = "1*2+1 * (9 + ((8+1) * 7)) + 2 * (3  + 2) * 2"; // 94
 	//string s = "snack  = ((1+8%7)+5)";
 	string s = "";
-	RETURN_TYPE ret;
 	Terminal    term( &s );
 	Lexer       lex( &s );
-	//Parser      parser;
 
+	lambda null = { END, END, };
 	while( term.capture() ) {
-		/*queue<lambda> sym;*/
 		vector<lambda> sym;
-		lambda null = { END, END, _UNREACHABLE_func, };
 		try {
 			if( lex.analyze( sym ) ) {
-				//parser.parse(&sym).eval(&ret).dispose();
 				void* pParser = ParseAlloc (malloc);
 				for (std::vector<lambda>::iterator i = sym.begin(); i != sym.end(); ++i)
 					Parse(pParser, i->type, *i);  
-				//cout << s;
 				Parse(pParser, null.type, null);
 				ParseFree(pParser, free ); 
-				//cout << " = " << ret << endl;
 			}
 		} catch( ErrorCodes e ) {
 			cout << endl << "Error: expected " << error_from_code( e ) << endl;
