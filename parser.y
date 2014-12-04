@@ -12,11 +12,13 @@ using namespace std;
 
 %token_type   {lambda}
 %default_type {lambda}
-   
-%type ex      {_LVAL}
-%type term    {_LVAL}
-%type fact    {_LVAL}
 
+%type math    {_LVAL}
+%type num     {_LVAL}
+%type ex      {_LVAL}
+%type run      {_LVAL}
+/*%type term    {_LVAL}
+%type fact    {_LVAL}*/
 
 %left PLUS SUB.
 %left MULT DIV MOD.
@@ -24,34 +26,20 @@ using namespace std;
 %syntax_error { throw EXPR_ERR; }
 
 
-/*lang ::= ex(L). { cout << "\n\n = " << L  << endl << flush; }*/
-/* THIS LANGUAGE IS NONSENSE */
-/*math ::= l(R).  {  cout << R << endl; }
-l(R) ::= e(A).				{ R.val = A.val; }
-e(R) ::= f(A) g(B).			{ R.val = A.func(A.val,B.val); }
-f(R) ::= h(A) i(B). 		{ R.val = A.func(A.val,B.val); }
-g(R) ::= PLUS(O) f(A) g(B). { if( B.type == END ) R.func = O.func; R.val = A.val; }
-g(R) ::= SUB(O)  f(A) g(B). { if( B.type == END ) R.func = O.func; R.val = A.val; }
-h(R) ::= VAL(A). 			{ R.val  = A.val; R.type = VAL; }
-h(R) ::= LPAREN e(A) RPAREN.{ R.val  = A.val; }
-h(R) ::= END.				{ R.type = END; }
-i(R) ::= MULT(O) H(A) I(B). { if( B.type == END ) R.func = O.func; R.val = A.val; }
-i(R) ::= DIV(O)  H(A) I(B). { if( B.type == END ) R.func = O.func; R.val = A.val; }
-i(R) ::= MOD(O)  H(A) I(B). { if( B.type == END ) R.func = O.func; R.val = A.val; }
-i(R) ::= END.				{ R.type = END; }*/
+lang ::= run END.               
 
-ex(L) ::= terma(A).						{ L = A; }
-ex(L) ::= terma(A) sum(O) termb(B).		{ L = O.func(A, B); }
+run ::= IDENT(A) EQ ex(B).        { cout << " = " << B << endl; TermCalc::IdentSet(A,B); }
+run ::= ex(A).                    { cout << " = " << A  << endl << flush;  }
 
-sum(L) ::=	PLUS(A).					{ L = A; }
-sum(L) ::=	SUB(A).						{ L = A; }
+ex(L) ::= math(A).                { L = A; }
 
-term(L) ::= fact(A).					{ L = A; }
-term(L) ::= fact(A) prod(O) fact(B).	{ L = O.func(A, B); }
+math(L) ::= math(A) PLUS math(B). { L = A + B; }
+math(L) ::= math(A) SUB  math(B). { L = A - B; }
+math(L) ::= math(A) DIV  math(B). { L = A / B; }
+math(L) ::= math(A) MULT math(B). { L = A * B; }
+math(L) ::= math(A) MOD  math(B). { L = A % B; }
 
-prod(L) ::= MULT(A).					{ L = A; }
-prod(L) ::= DIV(A).						{ L = A; }
-prod(L) ::= MOD(A).						{ L = A; }
-
-fact(L) ::= VAL(A). 					{ L = A.val; }
-fact(L) ::= LPAREN ex(A) RPAREN.		{ L = A; cout << "(ex("<<A<<"))\n"; }
+math(L) ::= num(A).               { L = A; }
+num(L)  ::= VAL(A).               { L = A.val; }
+num(L)  ::= IDENT(A).			  { L = TermCalc::ValFromID(A); }
+num(L)  ::= LPAREN ex(A) RPAREN.  { L = A; }

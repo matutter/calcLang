@@ -9,9 +9,17 @@
 #include <termios.h>
 #include <stdint.h>
 #include "parser.h"
+#include <map>
+
+std::map<std::string, int> id_map;
+std::map<int, std::string> rev_id_map;
+std::map<int,int>    val_map;
 
 #ifndef END 
 #define END 98
+#endif
+#ifndef IDENT
+#define IDENT 99
 #endif
 
 #define _LVAL int
@@ -19,6 +27,42 @@
 //#define PARSEDEBUG
 namespace TermCalc
 {
+
+	typedef enum {
+		H_ERR, I_ERR, TERM_ERR, VAL_ERR, G_ERR, EXPR_ERR, L_ERR, LPAR_ERR, NOIDENT
+	} ErrorCodes;
+	typedef struct {
+		/*Symbol*/int type;
+		_LVAL val;
+		_LVAL (*func)(_LVAL, _LVAL);
+	} lambda;
+	int id = 0;
+	int GetCreateIdent(std::string s) {
+		if( id_map.find(s) == id_map.end() ) {
+			id_map[s]      = id;
+			rev_id_map[id] = s;
+			val_map[id]    = 0;
+			id++;
+		}
+		return id_map[s];
+	}
+
+	bool validID(lambda l) {
+		if( l.type != IDENT ) throw EXPR_ERR;
+		if( rev_id_map.find(l.val) == rev_id_map.end()  ) throw NOIDENT;
+		return true;
+	}
+
+	_LVAL ValFromID(lambda l) {
+		validID(l);
+		return val_map[l.val];
+	}
+
+	void IdentSet(lambda l, _LVAL b) {
+		validID(l);
+		val_map[l.val] = b;
+	}
+
 	/* these used to be lower case */
 	typedef enum {
 		//LPAREN, RPAREN, PLUS, SUB, MULT, MOD, DIV, VAL
@@ -35,6 +79,8 @@ namespace TermCalc
 			case '%': return MOD; 
 			case '/': return DIV;
 			case END: return END;
+			case IDENT: return IDENT;
+			case '=': return EQ;
 			default : return VAL; 
 		}
 	}
@@ -51,12 +97,10 @@ namespace TermCalc
 			case DIV 	: return "_DIV"; 
 			case VAL 	: return "_VAL_t";
 			case END    : return "_END_t";
+			case IDENT  : return "_IDENT_t;";
+			case EQ     : return "_eq";
 		}		
 	}
-
-	typedef enum {
-		H_ERR, I_ERR, TERM_ERR, VAL_ERR, G_ERR, EXPR_ERR, L_ERR, LPAR_ERR
-	} ErrorCodes;
 
 
 	std::string error_from_code( int x )
@@ -70,6 +114,7 @@ namespace TermCalc
 			case EXPR_ERR 	: return "expression"; 
 			case L_ERR 	: return "language"; 
 			case LPAR_ERR 	: return "unmet parenthesis"; 
+			case NOIDENT  : return "Unknown identifier";
 		}		
 	}
 	_LVAL atoi( std::string::iterator * c ) {
@@ -82,11 +127,16 @@ namespace TermCalc
 		return val;
 	}
 
-	typedef struct {
-		/*Symbol*/int type;
-		_LVAL val;
-		_LVAL (*func)(_LVAL, _LVAL);
-	} lambda;
+	std::string findIdent( std::string::iterator *c ) {
+		std::string s = "";
+		while( **c != 0x0 && (isdigit(**c) || isalpha(**c)) ) {
+			s+= **c;
+			(*c)++;
+		}
+		return s;
+	}
+
+
 
 	inline std::ostream &operator<<(std::ostream &out, const lambda &l) {
 		if( l.type==VAL )
@@ -154,7 +204,11 @@ namespace TermCalc
 		0,
 		_MOD_func,
 	};	
-
+	TermCalc::lambda _eq = {
+		TYPECODE( '=' ),
+		0,
+		_MOD_func,
+	};
 
 }
 #endif

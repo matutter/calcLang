@@ -3,9 +3,9 @@
 #define MULT                            3
 #define DIV                             4
 #define MOD                             5
-#define VAL                             6
-#define LPAREN                          7
-#define RPAREN                          8
-#define END                             9
-#define H                              10
-#define I                              11
+#define END                             6
+#define IDENT                           7
+#define EQ                              8
+#define VAL                             9
+#define LPAREN                         10
+#define RPAREN                         11

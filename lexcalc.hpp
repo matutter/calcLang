@@ -46,6 +46,10 @@ namespace TermCalc
 					symbols.push_back( _div );
 					it++;
 				break;
+				case '=':
+					symbols.push_back( _eq );
+					it++;
+				break;
 				default:
 					if( isdigit( *it ) ) {
 						lambda l;
@@ -56,6 +60,13 @@ namespace TermCalc
 					}
 					else if( isspace(*it) )
 						it++;
+					else if( isalpha(*it) ) {
+						lambda l;
+						l.type = IDENT;
+						std::string s = TermCalc::findIdent(&it);
+						l.val = TermCalc::GetCreateIdent(s);
+						symbols.push_back(l);			
+					}
 					else return ERR( it - this->buffer->begin() );
 			}
 			return symbols.size();

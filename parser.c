@@ -66,13 +66,13 @@ using namespace std;
 **                       defined, then do no error processing.
 */
 #define YYCODETYPE unsigned char
-#define YYNOCODE 24
+#define YYNOCODE 19
 #define YYACTIONTYPE unsigned char
 #define ParseTOKENTYPE lambda
 typedef union {
   int yyinit;
   ParseTOKENTYPE yy0;
-  _LVAL yy21;
+  _LVAL yy27;
 } YYMINORTYPE;
 #ifndef YYSTACKDEPTH
 #define YYSTACKDEPTH 100
@@ -81,7 +81,7 @@ typedef union {
 #define ParseARG_PDECL
 #define ParseARG_FETCH
 #define ParseARG_STORE
-#define YYNSTATE 28
+#define YYNSTATE 24
 #define YYNRULE 13
 #define YY_NO_ACTION      (YYNSTATE+YYNRULE+2)
 #define YY_ACCEPT_ACTION  (YYNSTATE+YYNRULE+1)
@@ -151,38 +151,38 @@ static const YYMINORTYPE yyzerominor = { 0 };
 **                     shifting non-terminals after a reduce.
 **  yy_default[]       Default action for each state.
 */
-#define YY_ACTTAB_COUNT (34)
+#define YY_ACTTAB_COUNT (40)
 static const YYACTIONTYPE yy_action[] = {
- /*     0 */    42,   15,   27,    7,   13,    4,   14,   12,   10,   28,
- /*    10 */    18,    1,   21,   16,    8,    7,    6,    4,    4,    3,
- /*    20 */     2,    5,   24,    4,   11,   26,   23,    9,   17,   25,
- /*    30 */    22,   43,   20,   19,
+ /*     0 */     7,    6,    4,    5,    3,    8,   19,   15,   14,   38,
+ /*    10 */     4,    5,    3,   17,   16,   18,    1,    8,   19,   23,
+ /*    20 */    13,    8,   19,   11,   12,   24,   18,    1,   39,   10,
+ /*    30 */    19,    9,   19,   22,   19,   21,   19,   20,   19,    2,
 };
 static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    16,   17,   18,   19,   10,   21,    3,    4,    5,    0,
- /*    10 */     6,    7,    9,    9,   18,   19,   19,   21,   21,    1,
- /*    20 */     2,   19,   11,   21,   10,   20,   11,   10,    8,   22,
- /*    30 */    11,   23,   20,   20,
+ /*     0 */     1,    2,    3,    4,    5,   13,   14,   15,   16,   17,
+ /*    10 */     3,    4,    5,    7,   11,    9,   10,   13,   14,   15,
+ /*    20 */     6,   13,   14,   15,    7,    0,    9,   10,   18,   13,
+ /*    30 */    14,   13,   14,   13,   14,   13,   14,   13,   14,    8,
 };
-#define YY_SHIFT_USE_DFLT (-7)
-#define YY_SHIFT_COUNT (15)
-#define YY_SHIFT_MIN   (-6)
-#define YY_SHIFT_MAX   (20)
+#define YY_SHIFT_USE_DFLT (-2)
+#define YY_SHIFT_COUNT (14)
+#define YY_SHIFT_MIN   (-1)
+#define YY_SHIFT_MAX   (31)
 static const signed char yy_shift_ofst[] = {
- /*     0 */     4,    4,    4,    4,    3,   18,   18,   18,   20,   19,
- /*    10 */    17,   15,   14,   11,   -6,    9,
+ /*     0 */    17,    6,    6,    6,    6,    6,    6,    6,   -1,    7,
+ /*    10 */     7,    3,   31,   25,   14,
 };
-#define YY_REDUCE_USE_DFLT (-17)
+#define YY_REDUCE_USE_DFLT (-9)
 #define YY_REDUCE_COUNT (7)
-#define YY_REDUCE_MIN   (-16)
-#define YY_REDUCE_MAX   (13)
+#define YY_REDUCE_MIN   (-8)
+#define YY_REDUCE_MAX   (24)
 static const signed char yy_reduce_ofst[] = {
- /*     0 */   -16,   -4,    2,   -3,    7,   13,   12,    5,
+ /*     0 */    -8,    8,    4,   24,   22,   20,   18,   16,
 };
 static const YYACTIONTYPE yy_default[] = {
- /*     0 */    41,   41,   41,   41,   41,   41,   41,   41,   41,   41,
- /*    10 */    41,   41,   41,   41,   41,   41,   36,   35,   34,   33,
- /*    20 */    32,   40,   39,   38,   37,   31,   30,   29,
+ /*     0 */    37,   37,   37,   37,   37,   37,   37,   37,   27,   29,
+ /*    10 */    28,   37,   35,   37,   37,   26,   36,   35,   34,   33,
+ /*    20 */    32,   31,   30,   25,
 };
 
 /* The next table maps tokens into fallback tokens.  If a construct
@@ -276,11 +276,10 @@ void ParseTrace(FILE *TraceFILE, char *zTracePrompt){
 ** are required.  The following table supplies these names */
 static const char *const yyTokenName[] = { 
   "$",             "PLUS",          "SUB",           "MULT",        
-  "DIV",           "MOD",           "VAL",           "LPAREN",      
-  "RPAREN",        "END",           "H",             "I",           
-  "error",         "ex",            "term",          "fact",        
-  "math",          "l",             "e",             "f",           
-  "g",             "h",             "i",           
+  "DIV",           "MOD",           "END",           "IDENT",       
+  "EQ",            "VAL",           "LPAREN",        "RPAREN",      
+  "error",         "math",          "num",           "ex",          
+  "run",           "lang",        
 };
 #endif /* NDEBUG */
 
@@ -288,19 +287,19 @@ static const char *const yyTokenName[] = {
 /* For tracing reduce actions, the names of all rules are required.
 */
 static const char *const yyRuleName[] = {
- /*   0 */ "math ::= l",
- /*   1 */ "l ::= e",
- /*   2 */ "e ::= f g",
- /*   3 */ "f ::= h i",
- /*   4 */ "g ::= PLUS f g",
- /*   5 */ "g ::= SUB f g",
- /*   6 */ "h ::= VAL",
- /*   7 */ "h ::= LPAREN e RPAREN",
- /*   8 */ "h ::= END",
- /*   9 */ "i ::= MULT H I",
- /*  10 */ "i ::= DIV H I",
- /*  11 */ "i ::= MOD H I",
- /*  12 */ "i ::= END",
+ /*   0 */ "lang ::= run END",
+ /*   1 */ "run ::= IDENT EQ ex",
+ /*   2 */ "run ::= ex",
+ /*   3 */ "ex ::= math",
+ /*   4 */ "math ::= math PLUS math",
+ /*   5 */ "math ::= math SUB math",
+ /*   6 */ "math ::= math DIV math",
+ /*   7 */ "math ::= math MULT math",
+ /*   8 */ "math ::= math MOD math",
+ /*   9 */ "math ::= num",
+ /*  10 */ "num ::= VAL",
+ /*  11 */ "num ::= IDENT",
+ /*  12 */ "num ::= LPAREN ex RPAREN",
 };
 #endif /* NDEBUG */
 
@@ -614,19 +613,19 @@ static const struct {
   YYCODETYPE lhs;         /* Symbol on the left-hand side of the rule */
   unsigned char nrhs;     /* Number of right-hand side symbols in the rule */
 } yyRuleInfo[] = {
+  { 17, 2 },
+  { 16, 3 },
   { 16, 1 },
-  { 17, 1 },
-  { 18, 2 },
-  { 19, 2 },
-  { 20, 3 },
-  { 20, 3 },
-  { 21, 1 },
-  { 21, 3 },
-  { 21, 1 },
-  { 22, 3 },
-  { 22, 3 },
-  { 22, 3 },
-  { 22, 1 },
+  { 15, 1 },
+  { 13, 3 },
+  { 13, 3 },
+  { 13, 3 },
+  { 13, 3 },
+  { 13, 3 },
+  { 13, 1 },
+  { 14, 1 },
+  { 14, 1 },
+  { 14, 3 },
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -681,56 +680,64 @@ static void yy_reduce(
   **  #line <lineno> <thisfile>
   **     break;
   */
-      case 0: /* math ::= l */
-#line 28 "parser.y"
-{  cout << yymsp[0].minor.yy0 << endl; }
-#line 688 "parser.c"
+      case 1: /* run ::= IDENT EQ ex */
+#line 31 "parser.y"
+{ cout << " = " << yymsp[0].minor.yy27 << endl; TermCalc::IdentSet(yymsp[-2].minor.yy0,yymsp[0].minor.yy27); }
+#line 687 "parser.c"
         break;
-      case 1: /* l ::= e */
-#line 29 "parser.y"
-{ yygotominor.yy0.val = yymsp[0].minor.yy0.val; }
-#line 693 "parser.c"
-        break;
-      case 2: /* e ::= f g */
-      case 3: /* f ::= h i */ yytestcase(yyruleno==3);
-#line 30 "parser.y"
-{ yygotominor.yy0.val = yymsp[-1].minor.yy0.func(yymsp[-1].minor.yy0.val,yymsp[0].minor.yy0.val); }
-#line 699 "parser.c"
-        break;
-      case 4: /* g ::= PLUS f g */
-      case 9: /* i ::= MULT H I */ yytestcase(yyruleno==9);
+      case 2: /* run ::= ex */
 #line 32 "parser.y"
-{ if( yymsp[0].minor.yy0.type == END ) yygotominor.yy0.func = yymsp[-2].minor.yy0.func; yygotominor.yy0.val = yymsp[-1].minor.yy0.val; }
-#line 705 "parser.c"
+{ cout << " = " << yymsp[0].minor.yy27  << endl << flush;  }
+#line 692 "parser.c"
         break;
-      case 5: /* g ::= SUB f g */
-      case 10: /* i ::= DIV H I */ yytestcase(yyruleno==10);
-#line 33 "parser.y"
-{ if( yymsp[0].minor.yy0.type == END ) yygotominor.yy0.func = yymsp[-2].minor.yy0.func; yygotominor.yy0.val = yymsp[-1].minor.yy0.val;  }
-#line 711 "parser.c"
-        break;
-      case 6: /* h ::= VAL */
+      case 3: /* ex ::= math */
+      case 9: /* math ::= num */ yytestcase(yyruleno==9);
 #line 34 "parser.y"
-{ yygotominor.yy0.val  = yymsp[0].minor.yy0.val; yygotominor.yy0.type = VAL; }
-#line 716 "parser.c"
+{ yygotominor.yy27 = yymsp[0].minor.yy27; }
+#line 698 "parser.c"
         break;
-      case 7: /* h ::= LPAREN e RPAREN */
-#line 35 "parser.y"
-{ yygotominor.yy0.val  = yymsp[-1].minor.yy0.val; }
-#line 721 "parser.c"
-        break;
-      case 8: /* h ::= END */
-      case 12: /* i ::= END */ yytestcase(yyruleno==12);
+      case 4: /* math ::= math PLUS math */
 #line 36 "parser.y"
-{ yygotominor.yy0.type = END; }
-#line 727 "parser.c"
+{ yygotominor.yy27 = yymsp[-2].minor.yy27 + yymsp[0].minor.yy27; }
+#line 703 "parser.c"
         break;
-      case 11: /* i ::= MOD H I */
+      case 5: /* math ::= math SUB math */
+#line 37 "parser.y"
+{ yygotominor.yy27 = yymsp[-2].minor.yy27 - yymsp[0].minor.yy27; }
+#line 708 "parser.c"
+        break;
+      case 6: /* math ::= math DIV math */
+#line 38 "parser.y"
+{ yygotominor.yy27 = yymsp[-2].minor.yy27 / yymsp[0].minor.yy27; }
+#line 713 "parser.c"
+        break;
+      case 7: /* math ::= math MULT math */
 #line 39 "parser.y"
-{ if( yymsp[0].minor.yy0.type == END )yygotominor.yy0.func = yymsp[-2].minor.yy0.func; yygotominor.yy0.val = yymsp[-1].minor.yy0.val;  }
-#line 732 "parser.c"
+{ yygotominor.yy27 = yymsp[-2].minor.yy27 * yymsp[0].minor.yy27; }
+#line 718 "parser.c"
+        break;
+      case 8: /* math ::= math MOD math */
+#line 40 "parser.y"
+{ yygotominor.yy27 = yymsp[-2].minor.yy27 % yymsp[0].minor.yy27; }
+#line 723 "parser.c"
+        break;
+      case 10: /* num ::= VAL */
+#line 43 "parser.y"
+{ yygotominor.yy27 = yymsp[0].minor.yy0.val; }
+#line 728 "parser.c"
+        break;
+      case 11: /* num ::= IDENT */
+#line 44 "parser.y"
+{ yygotominor.yy27 = TermCalc::ValFromID(yymsp[0].minor.yy0); }
+#line 733 "parser.c"
+        break;
+      case 12: /* num ::= LPAREN ex RPAREN */
+#line 45 "parser.y"
+{ yygotominor.yy27 = yymsp[-1].minor.yy27; }
+#line 738 "parser.c"
         break;
       default:
+      /* (0) lang ::= run END */ yytestcase(yyruleno==0);
         break;
   };
   yygoto = yyRuleInfo[yyruleno].lhs;
@@ -790,9 +797,9 @@ static void yy_syntax_error(
 ){
   ParseARG_FETCH;
 #define TOKEN (yyminor.yy0)
-#line 24 "parser.y"
+#line 26 "parser.y"
  throw EXPR_ERR; 
-#line 796 "parser.c"
+#line 803 "parser.c"
   ParseARG_STORE; /* Suppress warning about unused %extra_argument variable */
 }
 
